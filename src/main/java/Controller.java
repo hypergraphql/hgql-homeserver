@@ -15,31 +15,9 @@ public class Controller {
 
         port(config.getPort());
 
-        get("/", (req, res) -> {
-
-            String content = req.headers("accept");
-
-            HttpResponse<String> response = Unirest.get(config.getGitpage())
-                    .header("Accept", content)
-                    .asString();
-
-            res.type(content);
-
-            res.status(200);
-
-            return(response.getBody());
-        });
-
-        get("/hypergraphql", (req, res) -> {
-
-            res.redirect("/");
-
-            return null;
-        });
-
         for (GraphQLConfig hgql : config.getServices()) {
 
-            post("/hypergraphql/service/" + hgql.getGraphql() , (req, res) -> {
+            post("/service/" + hgql.getGraphql() , (req, res) -> {
 
                 String content = req.headers("accept");
 
@@ -62,7 +40,7 @@ public class Controller {
 
             });
 
-            get("/hypergraphql/service/" + hgql.getGraphql(), (req, res) -> {
+            get("/service/" + hgql.getGraphql(), (req, res) -> {
 
                 String content = req.headers("accept");
 
@@ -77,11 +55,7 @@ public class Controller {
                 return(response.getBody());
             });
 
-        }
-
-        for (GraphQLConfig hgql : config.getServices()) {
-
-            get("/hypergraphql/service/" + hgql.getGraphiql(), (req, res) -> {
+            get("/service/" + hgql.getGraphiql(), (req, res) -> {
 
                 Map<String, String> model = new HashMap<>();
 
@@ -91,6 +65,7 @@ public class Controller {
                         new ModelAndView(model, "graphiql.vtl")
                 );
             });
+
         }
 
         get("/hypergraphql/*", (req, res) -> {
@@ -105,7 +80,24 @@ public class Controller {
 
             res.status(200);
 
-            return(response.getBody());
+            return(response.getRawBody());
+
+        });
+
+        get("*", (req, res) -> {
+
+            String content = req.headers("accept");
+
+            HttpResponse<InputStream> response = Unirest.get(config.getGitpage() + req.pathInfo())
+                    .header("Accept", content)
+                    .asBinary();
+
+            res.type(content);
+
+            res.status(200);
+
+            return(response.getRawBody());
+
         });
 
     }

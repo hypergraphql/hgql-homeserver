@@ -2,9 +2,13 @@
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 public class ServerConfig {
@@ -49,8 +53,22 @@ public class ServerConfig {
 
         ObjectMapper mapper = new ObjectMapper();
 
+        String propertiesObjectString  = "";
+
         try {
-            ServerConfig config = mapper.readValue(new File(propertyFilepath), ServerConfig.class);
+            HttpResponse<String> response = Unirest.get(propertyFilepath)
+                    .asString();
+
+            propertiesObjectString = response.getBody().toString();
+
+            System.out.println(propertiesObjectString);
+
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            ServerConfig config = mapper.readValue(propertiesObjectString, ServerConfig.class);
 
             this.port = config.port;
             this.gitpage = config.gitpage;
