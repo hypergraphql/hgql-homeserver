@@ -59,7 +59,7 @@ public class Controller {
 
                 Map<String, String> model = new HashMap<>();
 
-                model.put("template", String.valueOf("/hypergraphql/service/" + hgql.getGraphql()));
+                model.put("template", String.valueOf("/service/" + hgql.getGraphql()));
 
                 return new VelocityTemplateEngine().render(
                         new ModelAndView(model, "graphiql.vtl")
