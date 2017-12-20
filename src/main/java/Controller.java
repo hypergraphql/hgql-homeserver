@@ -88,15 +88,15 @@ public class Controller {
 
             String content = req.headers("accept");
 
-            HttpResponse<InputStream> response = Unirest.get(config.getGitpage() + req.pathInfo())
+            HttpResponse<String> response = Unirest.get(config.getGitpage() + req.pathInfo())
                     .header("Accept", content)
-                    .asBinary();
+                    .asString();
 
-            res.type(content);
+            res.type("text/html");
 
             res.status(200);
 
-            return(response.getRawBody());
+            return(response.getBody());
 
         });
 
