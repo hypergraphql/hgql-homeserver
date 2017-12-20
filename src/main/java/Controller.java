@@ -5,6 +5,7 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.*;
@@ -19,17 +20,22 @@ public class Controller {
 
             post("/service/" + hgql.getGraphql() , (req, res) -> {
 
-                String content = req.headers("accept");
+                String accept = req.headers("accept");
+
+                if (!accept.contains("application/json")) {
+                    res.status(415);
+                    return("This demo service does not support the requested media type.");
+                }
 
                 try {
                     HttpResponse<InputStream> response = Unirest.post("http://localhost:" + hgql.getPort() + "/graphql")
-                            .header("Accept", content)
+                            .header("Accept", "application/json")
                             .body(req.bodyAsBytes())
                             .asBinary();
 
-                    res.type(content);
+                    res.type("application/json");
 
-                    res.status(200);
+                    res.status(response.getStatus());
 
                     return(response.getBody());
 
@@ -42,13 +48,18 @@ public class Controller {
 
             get("/service/" + hgql.getGraphql(), (req, res) -> {
 
-                String content = req.headers("accept");
+                String accept = req.headers("accept");
+
+                if (!accept.contains("application/turtle") && !accept.contains("text/html")) {
+                    res.status(415);
+                    return("This demo service does not support the requested media type.");
+                }
 
                 HttpResponse<InputStream> response = Unirest.get("http://localhost:" + hgql.getPort() + "/graphql")
                         .header("Accept", "application/turtle")
                         .asBinary();
 
-                res.type(content);
+                res.type("text/plain");
 
                 res.status(200);
 
@@ -78,7 +89,7 @@ public class Controller {
 
             res.type(content);
 
-            res.status(200);
+            res.status(response.getStatus());
 
             return(response.getRawBody());
 
@@ -86,15 +97,17 @@ public class Controller {
 
         get("*", (req, res) -> {
 
-            String content = req.headers("accept");
+            String accept = req.headers("accept");
 
             HttpResponse<String> response = Unirest.get(config.getGitpage() + req.pathInfo())
-                    .header("Accept", content)
+                    .header("Accept", accept)
                     .asString();
+
+            List<String> content = response.getHeaders().get("Content-Type");
 
             res.type("text/html");
 
-            res.status(200);
+            res.status(response.getStatus());
 
             return(response.getBody());
 
