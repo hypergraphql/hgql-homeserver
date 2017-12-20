@@ -103,8 +103,6 @@ public class Controller {
                     .header("Accept", accept)
                     .asString();
 
-            List<String> content = response.getHeaders().get("Content-Type");
-
             res.type("text/html");
 
             res.status(response.getStatus());
