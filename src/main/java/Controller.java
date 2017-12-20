@@ -22,7 +22,7 @@ public class Controller {
                 String content = req.headers("accept");
 
                 try {
-                    HttpResponse<InputStream> response = Unirest.post("http://localhost:" + hgql.getPort() + "/" + hgql.getGraphql())
+                    HttpResponse<InputStream> response = Unirest.post("http://localhost:" + hgql.getPort() + "/graphql")
                             .header("Accept", content)
                             .body(req.bodyAsBytes())
                             .asBinary();
@@ -44,7 +44,7 @@ public class Controller {
 
                 String content = req.headers("accept");
 
-                HttpResponse<InputStream> response = Unirest.get("http://localhost:" + hgql.getPort() + "/" + hgql.getGraphql())
+                HttpResponse<InputStream> response = Unirest.get("http://localhost:" + hgql.getPort() + "/graphql")
                         .header("Accept", "application/turtle")
                         .asBinary();
 
