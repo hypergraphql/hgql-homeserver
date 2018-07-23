@@ -1,4 +1,3 @@
-
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,10 +5,8 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.List;
 
 public class ServerConfig {
 
@@ -17,7 +14,6 @@ public class ServerConfig {
     private String gitpage;
     private String gitdomain;
     private List<GraphQLConfig> services;
-
 
     public Integer getPort() {
         return port;
@@ -48,18 +44,16 @@ public class ServerConfig {
         this.services = services;
     }
 
-
-    public ServerConfig(String propertyFilepath) {
+    ServerConfig(String propertyFilepath) {
 
         ObjectMapper mapper = new ObjectMapper();
 
         String propertiesObjectString  = "";
 
         try {
-            HttpResponse<String> response = Unirest.get(propertyFilepath)
-                    .asString();
+            HttpResponse<String> response = Unirest.get(propertyFilepath).asString();
 
-            propertiesObjectString = response.getBody().toString();
+            propertiesObjectString = response.getBody();
 
             System.out.println(propertiesObjectString);
 
@@ -78,15 +72,7 @@ public class ServerConfig {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
-
-
-
     }
-
-
 }
 
 

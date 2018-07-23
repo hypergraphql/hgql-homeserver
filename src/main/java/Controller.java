@@ -5,10 +5,11 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static spark.Spark.*;
+import static spark.Spark.get;
+import static spark.Spark.port;
+import static spark.Spark.post;
 
 public class Controller {
 
@@ -79,37 +80,51 @@ public class Controller {
 
         }
 
-        get("/hypergraphql/*", (req, res) -> {
+        get("/scripts/*", (req, res) -> {
 
-            String content = req.headers("accept");
+            String accept = req.headers("accept"); //TODO - is this needed?
 
-            HttpResponse<InputStream> response = Unirest.get(config.getGitdomain() + req.pathInfo())
-                    .header("Accept", content)
-                    .asBinary();
-
-            res.type(content);
-
-            res.status(response.getStatus());
-
-            return(response.getRawBody());
-
-        });
-
-        get("*", (req, res) -> {
-
-            String accept = req.headers("accept");
-
+            // proxy the script?
             HttpResponse<String> response = Unirest.get(config.getGitpage() + req.pathInfo())
-                    .header("Accept", accept)
+//                    .header("Accept", accept)
                     .asString();
 
-            res.type("text/html");
-
+            res.type("text/javascript");
             res.status(response.getStatus());
-
             return(response.getBody());
-
         });
+
+//        get("/hypergraphql/*", (req, res) -> {
+//
+//            String content = req.headers("accept");
+//
+//            HttpResponse<InputStream> response = Unirest.get(config.getGitdomain() + req.pathInfo())
+//                    .header("Accept", content)
+//                    .asBinary();
+//
+//            res.type(content);
+//
+//            res.status(response.getStatus());
+//
+//            return(response.getRawBody());
+//
+//        });
+
+//        get("*", (req, res) -> {
+//
+//            String accept = req.headers("accept");
+//
+//            HttpResponse<String> response = Unirest.get(config.getGitpage() + req.pathInfo())
+//                    .header("Accept", accept)
+//                    .asString();
+//
+//            res.type("text/html");
+//
+//            res.status(response.getStatus());
+//
+//            return(response.getBody());
+//
+//        });
 
     }
 }
